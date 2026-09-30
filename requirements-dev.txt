@@ -1,0 +1,2 @@
+# Development checks only; the release automation uses the Python standard library.
+ruff==0.14.14

@@ -10,3 +10,5 @@ renv/cache/
 __pycache__/
 *.pyc
 downloaded-app/
+.venv/
+.ruff_cache/

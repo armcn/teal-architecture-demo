@@ -4,6 +4,8 @@ A small working example of a multi-package R application, a separate CRAN-style 
 
 **Start here:** [Developer walkthrough](docs/WALKTHROUGH.md).
 
+To understand or change the scripts, read the [automation guide](docs/AUTOMATION.md).
+
 ## The three actions
 
 1. **Check source** runs automatically for branches and pull requests. It tests the packages together and restores them into a fresh library.
