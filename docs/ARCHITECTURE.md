@@ -32,6 +32,10 @@ A package name/version is associated with one archive. Each internal package has
 
 Development versions may have a fourth numeric component. Production accepts at most three components. This is an explicit convention for this demo; adapt it to company policy. Package versions remain independent: changing the reporter does not require bumping every package.
 
+## Runtime prerequisites
+
+Use the exact R version in `renv.lock` and a C/C++ build toolchain when installing source packages. Bootstrap selects the libuv source bundled with the pinned `fs` package (`USE_BUNDLED_LIBUV=1`), so Linux restores do not depend on an undeclared system libuv installation. For the real company packages, document and provision every additional system library in the runner and Connect images.
+
 ## What is deliberately simulated
 
 - Dev and production are persisted selections plus real installation and application smoke tests. There is no Connect server in this example.
