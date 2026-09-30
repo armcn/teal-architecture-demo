@@ -71,3 +71,14 @@ python3 -m unittest discover -s tests -v
 
 Use `ruff format .` to apply formatting. Ruff is a pinned development dependency;
 app users and release commands do not need it.
+
+## R package code
+
+The package APIs are also ordinary functions. Data validation, summaries, report
+text, generated app code, and export instructions are pure calculations. Shiny
+server factories create callbacks around those calculations. File reads, release
+copies, and ZIP creation are named boundary functions in Builder. Tests use named
+check functions and restore temporary option changes with `on.exit`.
+
+Package source changes, including readability changes, require a version bump
+once that name/version has been published. Existing snapshot bytes stay intact.

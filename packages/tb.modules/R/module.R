@@ -1,12 +1,20 @@
+# Compute the result independently of Shiny's reactive state.
 summarize_data <- function(data, column) {
   tb.checks::check_data(data, column)
-  list(n = length(data[[column]]), mean = mean(data[[column]]),
-       report = tb.reporter::report_text(data[[column]]))
+  values <- data[[column]]
+  list(
+    n = length(values),
+    mean = mean(values),
+    report = tb.reporter::report_text(values)
+  )
 }
 
 module_ui <- function(id) {
-  ns <- shiny::NS(id)
-  shiny::tagList(shiny::h3("Generated app preview"), shiny::textOutput(ns("summary")))
+  namespace <- shiny::NS(id)
+  shiny::tagList(
+    shiny::h3("Generated app preview"),
+    shiny::textOutput(namespace("summary"))
+  )
 }
 
 module_server <- function(id, column) {
@@ -20,7 +28,21 @@ module_server <- function(id, column) {
 run_example <- function(column = "mpg") {
   tb.checks::check_data(datasets::mtcars, column)
   shiny::shinyApp(
-    shiny::fluidPage(shiny::h2("Exported example app"), module_ui("example")),
-    function(input, output, session) module_server("example", shiny::reactive(column))
+    ui = example_ui(),
+    server = example_server(column)
   )
+}
+
+example_ui <- function() {
+  shiny::fluidPage(
+    shiny::h2("Exported example app"),
+    module_ui("example")
+  )
+}
+
+example_server <- function(column) {
+  force(column)
+  function(input, output, session) {
+    module_server("example", shiny::reactive(column))
+  }
 }
