@@ -1,6 +1,6 @@
 Package: tb.builder
 Title: Builder for the Architecture Example
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Example", "Maintainer", email = "maintainer@example.org", role = c("aut", "cre"))
 Description: A minimal builder that previews and exports apps with release metadata.
 License: MIT + file LICENSE
