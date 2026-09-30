@@ -22,6 +22,13 @@ jobs:
           persist-credentials: false
       - name: Validate workflow syntax and expressions
         run: bash scripts/lint-workflows.sh
+      - name: Read published package identities
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: armcn/teal-depository-demo
+          ref: published
+          path: .work/published
+          persist-credentials: false
       - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
         with:
           r-version: renv
@@ -33,7 +40,7 @@ jobs:
       - name: Build and check all internal packages
         env:
           SNAPSHOT: ci-${{ github.run_id }}-${{ github.run_attempt }}
-        run: python3 scripts/release.py build --out dist/candidate --snapshot "$SNAPSHOT" --source-sha "$GITHUB_SHA"
+        run: python3 scripts/release.py build --out dist/candidate --snapshot "$SNAPSHOT" --source-sha "$GITHUB_SHA" --existing-site .work/published/site
       - name: Restore from repository into an empty library and test apps
         run: python3 scripts/release.py verify dist/candidate
       - name: Retain diagnostic logs

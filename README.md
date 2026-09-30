@@ -60,6 +60,8 @@ tb.reporter ───┘
 
 The source `renv.lock` pins external dependencies. CI adds exact internal package records and an immutable snapshot URL to a generated app lockfile. The source lock is never overwritten by a release build. Dependency upgrades are explicit changes reviewed in Git.
 
+Source CI reads the Depository's published package identities. A missing package version bump therefore fails the pull request check, and unchanged packages are tested using their already published archive bytes.
+
 ## Reliability guarantees
 
 - All internal packages are ordered from their `DESCRIPTION` dependencies; dependency cycles fail.
