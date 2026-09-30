@@ -1,0 +1,7 @@
+Package: tb.reporter
+Title: Reporting for the Architecture Example
+Version: 0.1.0
+Authors@R: person("Example", "Maintainer", email = "maintainer@example.org", role = c("aut", "cre"))
+Description: Simple reporting used to exercise a reusable internal package.
+License: MIT + file LICENSE
+Encoding: UTF-8

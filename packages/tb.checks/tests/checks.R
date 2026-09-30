@@ -1,0 +1,7 @@
+library(tb.checks)
+stopifnot(check_data(data.frame(x = 1:3), "x"))
+fails <- function(expr) inherits(tryCatch(force(expr), error = identity), "error")
+stopifnot(fails(check_data(NULL, "x")), fails(check_data(data.frame(x = "a"), "x")))
+stopifnot(fails(check_data(data.frame(x = c(1, NA)), "x")))
+stopifnot(fails(check_data(data.frame(x = numeric()), "x")))
+stopifnot(fails(check_data(data.frame(x = 1), "missing")))

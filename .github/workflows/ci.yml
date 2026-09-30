@@ -1,0 +1,44 @@
+name: Check source
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  check:
+    name: Packages and clean restore
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      RENV_PATHS_ROOT: /tmp/teal-renv-state
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: r-lib/actions/setup-r@f9a764fea8d5c63df6ef9a5c7795bf7deb5d7e05 # v2
+        with:
+          r-version: renv
+          use-public-rspm: false
+      - name: Test release tooling
+        run: python3 -m unittest discover -s tests -v
+      - name: Restore pinned dependencies
+        run: Rscript --vanilla scripts/restore-dependencies.R
+      - name: Build and check all internal packages
+        env:
+          SNAPSHOT: ci-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 scripts/release.py build --out dist/candidate --snapshot "$SNAPSHOT" --source-sha "$GITHUB_SHA"
+      - name: Restore from repository into an empty library and test apps
+        run: python3 scripts/release.py verify dist/candidate
+      - name: Retain diagnostic logs
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: check-diagnostics
+          path: .work/logs
+          if-no-files-found: ignore
+          retention-days: 7

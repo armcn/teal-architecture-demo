@@ -1,0 +1,25 @@
+# Bootstrap only renv. All application packages come from the lockfile.
+bootstrap_renv <- function(version = "1.2.3") {
+  lib <- file.path(getwd(), ".work", "bootstrap")
+  dir.create(lib, recursive = TRUE, showWarnings = FALSE)
+  .libPaths(c(lib, .libPaths()))
+  if (requireNamespace("renv", quietly = TRUE) && as.character(packageVersion("renv")) == version) {
+    return(invisible(TRUE))
+  }
+  options(timeout = max(300L, getOption("timeout")))
+  urls <- c(sprintf("https://cloud.r-project.org/src/contrib/renv_%s.tar.gz", version),
+            sprintf("https://cloud.r-project.org/src/contrib/Archive/renv/renv_%s.tar.gz", version))
+  tarball <- tempfile(fileext = ".tar.gz")
+  on.exit(unlink(tarball), add = TRUE)
+  for (url in urls) {
+    success <- tryCatch(suppressWarnings(utils::download.file(url, tarball, quiet = TRUE)) == 0L,
+                        error = function(e) FALSE)
+    if (success) {
+      utils::install.packages(tarball, repos = NULL, type = "source", lib = lib)
+      if (requireNamespace("renv", quietly = TRUE) && as.character(packageVersion("renv")) == version) {
+        return(invisible(TRUE))
+      }
+    }
+  }
+  stop("Could not install the pinned renv version")
+}
