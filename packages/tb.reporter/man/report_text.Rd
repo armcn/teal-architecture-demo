@@ -4,4 +4,5 @@
 \description{A small mock component for testing package release workflows.}
 \usage{report_text(values)}
 \arguments{\item{values}{A numeric vector.}}
-\value{A character summary containing the observation count, mean and range.}
+\value{A character summary containing the observation count, mean and range.
+For an empty vector, the count is zero and the mean and range are reported as NA.}
