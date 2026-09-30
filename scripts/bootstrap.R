@@ -3,7 +3,11 @@ bootstrap_renv <- function(version = "1.2.3") {
   lib <- file.path(getwd(), ".work", "bootstrap")
   dir.create(lib, recursive = TRUE, showWarnings = FALSE)
   .libPaths(c(lib, .libPaths()))
-  if (requireNamespace("renv", quietly = TRUE) && as.character(packageVersion("renv")) == version) {
+  if ("renv" %in% loadedNamespaces() && as.character(getNamespaceVersion("renv")) != version) {
+    stop("A different renv is already loaded. Restart with Rscript --vanilla.")
+  }
+  available <- tryCatch(suppressWarnings(utils::packageDescription("renv")$Version), error = function(e) NULL)
+  if (identical(available, version) && requireNamespace("renv", quietly = TRUE)) {
     return(invisible(TRUE))
   }
   options(timeout = max(300L, getOption("timeout")))
