@@ -208,26 +208,30 @@ def verify_restore(snapshot_path, online=False):
     snapshot_path = Path(snapshot_path).resolve()
     with tempfile.TemporaryDirectory(prefix="restore-") as temporary:
         project = Path(temporary)
-        library = project / "library"
-        library.mkdir()
-        lock = read_json(snapshot_path / "app/renv.lock")
+        # Exercise the exact files developers download, including restore.R and
+        # a new R process loading the generated .Rprofile. A separate helper
+        # restore can accidentally hide bugs in the delivered restoration path.
+        shutil.copytree(snapshot_path / "app", project, dirs_exist_ok=True)
+        empty_user_library = project / "empty-user-library"
+        empty_user_library.mkdir()
+        lock = read_json(project / "renv.lock")
         with serve(snapshot_path) as local_url:
             if not online:
-                # Only the transport URL changes for this unpublished-candidate test.
+                # Only the transport URL changes for an unpublished candidate.
                 for repo in lock["R"]["Repositories"]:
                     if repo["Name"] == "TBDEMO":
                         repo["URL"] = local_url
             write_json(project / "renv.lock", lock)
-            script = project / "restore.R"
-            script.write_text('args <- commandArgs(TRUE)\n'
-                              'source(args[[1]])\nbootstrap_renv()\n'
-                              'options(timeout=300)\n'
-                              'renv::restore(project=args[[2]], lockfile=file.path(args[[2]], "renv.lock"), '
-                              'library=args[[3]], prompt=FALSE)\n')
-            env = isolated_env(library)
-            run(["Rscript", "--vanilla", script, ROOT / "scripts/bootstrap.R", project, library],
+            env = isolated_env(empty_user_library)
+            env["RENV_PATHS_ROOT"] = str(project / "renv-state")
+            run(["Rscript", "--vanilla", "restore.R"], cwd=project, env=env)
+            libraries = [p.parent.parent for p in (project / "renv/library").rglob("tb.builder/DESCRIPTION")]
+            if len(libraries) != 1:
+                raise ValueError("restore.R did not install the app into its project library")
+            env["RENV_CONFIG_AUTOLOADER_ENABLED"] = "TRUE"
+            env["R_PROFILE_USER"] = str(project / ".Rprofile")
+            run(["Rscript", ROOT / "scripts/smoke.R", libraries[0], project, "active"],
                 cwd=project, env=env)
-            run(["Rscript", "--vanilla", ROOT / "scripts/smoke.R", library, snapshot_path / "app"], env=env)
     print("PASS: cold restore and app smoke tests")
 
 

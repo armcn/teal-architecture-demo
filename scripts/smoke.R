@@ -1,5 +1,11 @@
 args <- commandArgs(TRUE)
-stopifnot(length(args) == 2L)
+stopifnot(length(args) %in% c(2L, 3L))
+if (length(args) == 3L) {
+  if (normalizePath(.libPaths()[[1]]) != normalizePath(args[[1]])) {
+    stop(sprintf("Project activation failed: expected %s, got %s",
+                 normalizePath(args[[1]]), paste(.libPaths(), collapse = "; ")))
+  }
+}
 .libPaths(c(normalizePath(args[[1]]), .Library), include.site = FALSE)
 release_dir <- normalizePath(args[[2]])
 lock <- jsonlite::read_json(file.path(release_dir, "renv.lock"))

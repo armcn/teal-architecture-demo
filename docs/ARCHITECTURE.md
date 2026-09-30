@@ -20,6 +20,8 @@ GitHub Actions artifacts are temporary transport, with a seven-day retention win
 
 Publish complete snapshots before updating environment selections. Git commits provide an atomic repository update; Pages publishes the complete retained site. HTTPS verification checks every published file and a fresh renv restore before recording dev evidence.
 
+The restore check runs the actual saved `app/restore.R`, then starts a separate R process using the generated `.Rprofile`. It checks that this process selected the app's project library before testing package versions and application behavior. This prevents a helper test from passing while the files developers download install into a different library.
+
 All writer workflows share a concurrency group. Git push refuses non-fast-forward changes. Production updates also use a compare-and-set check against an expected current snapshot. Together these prevent silent lost updates. GitHub can replace an older pending run with a newer pending run; the action can be started again. No in-progress publication is cancelled by the workflow configuration.
 
 A Pages failure can leave Git ahead of the served website. **Republish retained site** validates and republishes the retained data without a package rebuild. Rerun failed jobs afterward. Consumers use immutable URLs, so moving a channel pointer does not alter an already pinned app.
