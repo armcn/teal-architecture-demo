@@ -31,6 +31,8 @@ def main():
 
 
 def check_local_source():
+    # A failed check must not leave an old app selected against a changed library.
+    LOCAL_RELEASE_POINTER.unlink(missing_ok=True)
     run_command("Rscript", "--vanilla", "scripts/restore-dependencies.R")
     source_sha = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], text=True

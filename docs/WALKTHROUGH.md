@@ -4,7 +4,7 @@
 
 Create a feature branch in this repository. For a visible example, change the report text in `packages/tb.reporter/R/report.R`, update its test, and increment `Version` in that package's `DESCRIPTION`.
 
-Use a development version such as `0.1.1.9001` while experimenting. Every changed version that you publish must have a new version number. You do not need to publish every local edit.
+Read the current package version first, then choose a higher unused version. For example, after a `0.1.x` release you could experiment with `0.2.0.9001`. Every changed version that you publish must have a new version number. You do not need to publish every local edit.
 
 Push the branch and open a pull request. Wait for **Check source / Packages and clean restore**. Its job log names each package and test. Local equivalent: `python3 demo.py check`.
 
@@ -18,7 +18,7 @@ The snapshot ID identifies saved files, not a branch. Later commits on the featu
 
 ## 3. Make a release candidate
 
-Set the intended release package versions (for example `0.1.1`, without a fourth development component). Merge the pull request. Wait for source CI on `main` to pass, then run **Publish candidate** with `source_ref=main`.
+Set the intended release package versions (for example `0.2.0`, without a fourth development component). Merge the pull request. Wait for source CI on `main` to pass, then run **Publish candidate** with `source_ref=main`.
 
 The [Depository homepage](https://armcn.github.io/teal-depository-demo/) shows the verified candidate as **dev**. These final release package bytes are what will be promoted. Do not rename or rebuild them after testing.
 

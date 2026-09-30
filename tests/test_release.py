@@ -1,11 +1,23 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
+import demo
 from scripts.release_tools import build, files, packages, restore
 
 
 class ReleaseTests(unittest.TestCase):
+    def test_failed_check_clears_the_local_app_selection(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            pointer = Path(temporary) / "selected-release.txt"
+            pointer.write_text("previous-release")
+            with patch.object(demo, "LOCAL_RELEASE_POINTER", pointer):
+                with patch.object(demo, "run_command", side_effect=RuntimeError):
+                    with self.assertRaises(RuntimeError):
+                        demo.check_local_source()
+            self.assertFalse(pointer.exists())
+
     def test_rejects_unsafe_snapshot_ids(self):
         for name in ("../main", "/tmp/x", "a b", "x;echo", "", "x" * 81):
             with self.subTest(name=name), self.assertRaises(ValueError):
