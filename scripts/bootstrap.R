@@ -1,5 +1,8 @@
 # Bootstrap only renv. All application packages come from the lockfile.
 bootstrap_renv <- function(version = "1.2.3") {
+  # fs 2.x otherwise requires a separately installed libuv development library.
+  # Build the bundled, pinned source so fresh Linux machines can restore too.
+  Sys.setenv(USE_BUNDLED_LIBUV = "1")
   lib <- file.path(getwd(), ".work", "bootstrap")
   dir.create(lib, recursive = TRUE, showWarnings = FALSE)
   .libPaths(c(lib, .libPaths()))
