@@ -42,7 +42,7 @@ Use the exact R version in `renv.lock` and a C/C++ build toolchain when installi
 
 - Dev and production are persisted selections plus real installation and application smoke tests. There is no Connect server in this example.
 - The nested Shiny module and downloadable generated app are real, but intentionally small. The packages do not implement real Teal functionality.
-- Exported apps carry the full release lockfile. A smaller runtime dependency closure could be added after the release process is proven.
+- Exported apps carry the full release lockfile. Restore configures renv to check this complete cohort, including Builder even when an export only calls modules. Unused recommended packages bundled with the pinned R runtime are excluded; any bundled package explicitly present in the lock remains checked. A smaller runtime dependency closure could be added later.
 - Third-party package versions are pinned and retrieved from public CRAN. Long-term operation still depends on their availability. The company can replace this with its approved retained package mirror or snapshot service.
 - R is pinned, but `ubuntu-24.04` runner images receive updates. Full OS reproducibility would require a separately maintained container image pinned by digest and compatible Connect execution settings.
 - All snapshots are retained for this small example. There is no automatic deletion; durable exports make naive branch-based cleanup unsafe. A company retention policy should distinguish temporary candidates and supported releases.

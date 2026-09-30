@@ -23,6 +23,8 @@ check_project_activation <- function(expected_library) {
       expected_library, paste(.libPaths(), collapse = "; ")
     ))
   }
+  stopifnot(identical(renv::settings$snapshot.type(), "all"))
+  stopifnot(renv::status()$synchronized)
 }
 
 check_locked_packages <- function(library, release_directory) {
